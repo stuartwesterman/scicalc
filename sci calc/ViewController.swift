@@ -10,15 +10,14 @@ import UIKit
 
 class ViewController: UIViewController {
 
-
     @IBOutlet weak var display: UILabel!
+    @IBOutlet weak var history: UILabel!
     
     var userIsInTheMiddleOfTypingANumber = false
-    
     var brain = CalculatorBrain()
+    var historyStack = [String]()
 
     @IBAction func appendDigit(sender: UIButton) {
-        
         let digit = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber {
             display.text = display.text! + digit
@@ -26,7 +25,12 @@ class ViewController: UIViewController {
             display.text = digit
             userIsInTheMiddleOfTypingANumber = true
         }
-        
+    }
+    
+    @IBAction func appendHistory(sender: UIButton) {
+        let opString = sender.currentTitle!
+        historyStack.append(opString)
+        history.text = history.text! + " " + opString
     }
 
     @IBAction func operate(sender: UIButton) {
@@ -44,7 +48,7 @@ class ViewController: UIViewController {
     
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
-        if let result = brain.pushOperand(displayValue) {
+        if let result = brain.pushOperand(displayValue!) {
             displayValue = result
         } else {
             // assignment 2 puts error message here
@@ -52,21 +56,28 @@ class ViewController: UIViewController {
         }
     }
 
-    var displayValue: Double {
+    var displayValue: Double? {
         get {
             if display.text! == "π" {
                 return M_PI
             } else {
-                return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+                if let number = NSNumberFormatter().numberFromString(display.text!)?.doubleValue {
+                    return number
+                } else {
+                    return nil
+                }
             }
         }
         set {
-            display.text = "\(newValue)"
+            display.text = "\(newValue!)"
             userIsInTheMiddleOfTypingANumber = false
         }
     }
+    
     @IBAction func allClear(sender: UIButton) {
         display.text = "0"
+        history.text = " "
+        historyStack.removeAll()
         userIsInTheMiddleOfTypingANumber = false
         brain.allClear()
     }

@@ -33,6 +33,8 @@ class CalculatorBrain {
     
     private var knownOps = [String:Op]()
     
+    private var variableValues = [String:Double]()
+    
     init() {
         func learnOp(op: Op) {
             knownOps[op.description] = op
